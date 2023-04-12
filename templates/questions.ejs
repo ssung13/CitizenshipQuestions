@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Fortune Teller</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+    <div class ="questionWrap">
+        <h1>Practice Questions</h1>
+        <p name="question" id="question" class = "question"></p>
+
+        <div class = "answer-wrap">
+            <label for="answer">Answer:</label>
+            <input name="answer" id="answer"></input>
+            <button type="button" id="submitButton">Submit</button>
+            <% var test=questions %>
+            <% var test2=answers %>
+            <% var randomness = random %>
+        </div>
+        <div id=bottom class = "bottom-wrap"></div>
+        <div class = "utility">
+            <button id="previousQuestion" onClick = prevQuestion()> Previous</button>
+            <button id="nextQuestion" onClick = nextQuestion()> Next </button>
+        </div>
+    </div>
+</body>
+
+<script>
+    let counter = 8;
+    let askedQuestions = [];
+    let askRandomQuestions = "<%= randomness %>";
+    console.log(askRandomQuestions)
+    if(askRandomQuestions === "true"){
+        let generatedQuestion = Math.floor(Math.random() * 100);
+        console.log(generatedQuestion)
+        counter = generatedQuestion;
+        askedQuestions.push(generatedQuestion)
+    }
+
+    // check if cookie is already there
+    if(askRandomQuestions !== "true"){
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+            if (cookie.startsWith("currentQuestionNumber=")) {
+                const myValue = cookie.substring("currentQuestionNumber=".length, cookie.length);
+                counter = myValue
+                break;
+            }
+        }
+    }
+
+    if(counter == 0 || askedQuestions.length <= 1){
+        document.getElementById("previousQuestion").disabled = true;
+    }
+
+    if(counter == 99 || askedQuestions.length >= 100){
+        document.getElementById("nextQuestion").disabled = true;
+    }
+
+    let questions = "<%= test %>".split(',');
+    let answers = "<%= test2 %>".split('|');
+    let thisQuestionAnswer, thisUserAnswer, thisQuestion;
+    thisQuestion = questions[counter].replaceAll("，",', ')
+    document.getElementById("question").innerHTML = `${parseInt(counter)+1}. ` + thisQuestion + " <button type='button' id='audioButton' onClick = readQuestion()> ♪ </button>"
+
+    function removeSyncategorematicTerms(str) {
+        let processedStr = str.replace(/[()]/g, "");
+        processedStr = processedStr.replaceAll(".", "");
+        processedStr = processedStr.replaceAll("&#39;", "'");
+        const syncategorematicTerms = ["the", "a", "an", "and", "or", "not", "of", "to", "for", "in", "on", "at", "with", "by", "from", "our", "because"];
+        const words = processedStr.trim().split(/\s+/);
+        const filteredWords = words.filter(word => !syncategorematicTerms.includes(word.toLowerCase()));
+        return filteredWords.join(" ");
+    }
+
+    function removeOptionalCharacters(str) {
+        const processedStr = str.replace(/\([^)]*\)/g, "");
+        return processedStr;
+    }
+    
+
+    async function clickHandler(event) {
+        let userAnswer = removeSyncategorematicTerms(document.getElementById("answer").value)
+        console.log(userAnswer)
+        let originalAnswer = answers[counter].split(",")
+        if (originalAnswer.length != 1) {
+            originalAnswer.shift();
+        }
+        let currAnswer = originalAnswer.map(answer => removeSyncategorematicTerms(answer));
+        let currAnswer2 = originalAnswer.map(answer => removeSyncategorematicTerms(removeOptionalCharacters(answer)));
+
+        console.log(originalAnswer)
+        console.log(currAnswer)
+        console.log(currAnswer2)
+        
+        // check if answer is correct according to the answers (ignoring syncategorematic terms and terms in parenthesis)
+        if ((currAnswer.some(answer => (answer.toLowerCase() === userAnswer.toLowerCase())) || 
+        originalAnswer.some(answer => (answer.toLowerCase() === userAnswer.toLowerCase())) || 
+        currAnswer2.some(answer => (answer.toLowerCase() === userAnswer.toLowerCase())) || 
+        userAnswer.toLowerCase().split(',').every(answer => currAnswer.map(x => x.toLowerCase()).includes(answer.trim())) ||
+        userAnswer.toLowerCase().split(',').every(answer => currAnswer2.map(x => x.toLowerCase()).includes(answer.trim())) ||
+        userAnswer.toLowerCase().split(',').every(answer => originalAnswer.map(x => x.toLowerCase()).includes(answer.trim()))) && userAnswer != "") {
+            document.getElementById("bottom").innerHTML = "<p><b>Correct!</b></p><p>Correct answer(s): " + originalAnswer
+            document.getElementById("nextQuestion").focus();
+        }
+        else {
+            thisQuestionAnswer = originalAnswer;
+            thisUserAnswer = document.getElementById("answer").value;
+            thisQuestion = questions[counter].replaceAll("，",', ')
+            if (currAnswer.some(answer => (answer.toLowerCase().includes(userAnswer.toLowerCase()))) && userAnswer != "") {
+                document.getElementById("bottom").innerHTML = "<p>Partially Correct...</p><button onclick = showAnswer()>Skip and show answer</button><button onclick = checkAnswerByAI() id = 'checkAI'>Ask AI if this answer is passable</button>"
+            }
+            else {
+                document.getElementById("bottom").innerHTML = "<p>Incorrect.</p><button onclick = showAnswer()>Skip and show answer</button><button onclick = checkAnswerByAI() id = 'checkAI'>Ask AI if this answer is passable</button>"
+            }
+        }
+    }
+
+    function readQuestion(){
+        if ('speechSynthesis' in window) {
+            // Create a new SpeechSynthesisUtterance object
+            const message = new SpeechSynthesisUtterance(thisQuestion);
+
+            // Set the text to be spoken
+            message.text = thisQuestion;
+
+            // Use the default voice
+            const voice = speechSynthesis.getVoices().find(voice => voice.lang === 'en-US');
+            message.voice = voice;
+            console.log(speechSynthesis.getVoices())
+            message.lang = "en-US";
+            // Speak the text
+            speechSynthesis.speak(message);
+        }
+    }
+
+    function nextQuestion() {
+        if(askRandomQuestions === "true"){
+            let generatedQuestion = Math.floor(Math.random() * 100);
+
+            while(askedQuestions.includes(generatedQuestion)){
+                generatedQuestion = Math.floor(Math.random() * 100);
+            }
+            counter = generatedQuestion;
+            askedQuestions.push(generatedQuestion)
+        }
+        else{
+            if(counter < 100){
+                counter++;
+                document.cookie = `currentQuestionNumber=${counter}; expires=Fri, 31 Dec 2023 23:59:59 GMT; path=/`;
+            }
+        }
+        thisQuestion = questions[counter].replaceAll("，",', ');
+        document.getElementById("question").innerHTML = `${counter+1}. ` + thisQuestion + " <button type='button' id='audioButton' onClick = readQuestion()> ♪ </button>"
+        document.getElementById("answer").value = ""
+        document.getElementById("bottom").innerHTML = ""
+        document.getElementById("answer").focus()
+        document.getElementById("previousQuestion").disabled = false;
+        if(counter == 99 || (askRandomQuestions === "true" && askedQuestions.length >= 100)){
+            document.getElementById("nextQuestion").disabled = true;
+        }
+        else{
+            document.getElementById("nextQuestion").disabled = false;
+        }
+    }
+
+    function prevQuestion() {
+        if(askRandomQuestions === "true"){
+            askedQuestions.pop()
+            counter = askedQuestions[askedQuestions.length -1]
+        }
+        else{
+            if(counter > 0){
+                counter--;
+                document.cookie = `currentQuestionNumber=${counter}; expires=Fri, 31 Dec 2023 23:59:59 GMT; path=/`;
+            }
+        }
+        thisQuestion = questions[counter].replaceAll("，",', ');
+        document.getElementById("question").innerHTML = `${counter+1}. ` + thisQuestion + "<button type='button' id='audioButton' onClick = readQuestion()> ♪ </button>"
+        document.getElementById("answer").value = ""
+        document.getElementById("bottom").innerHTML = ""
+        document.getElementById("answer").focus()
+        document.getElementById("nextQuestion").disabled = false;
+        if(counter == 0 || (askRandomQuestions === "true" && askedQuestions.length <= 1)){
+            document.getElementById("previousQuestion").disabled = true;
+        }
+        else{
+            document.getElementById("previousQuestion").disabled = false;
+        }
+    }
+
+    async function checkAnswerByAI(){
+        document.getElementById("bottom").innerHTML = "<div class = 'loader'></div><p>Checking....</p>"
+        if(thisUserAnswer != ""){
+            fetch('https://5npq8d68ee.execute-api.us-east-1.amazonaws.com/checkAnswerAI', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                userAnswer: thisUserAnswer,
+                originalAnswer: thisQuestionAnswer,
+                originalQuestion: thisQuestion
+            })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the page with the response
+                // const outputElement = document.getElementById('output');
+                // outputElement.textContent = `You entered: ${data.processedInput}`;
+                console.log(data.response)
+                let ans = data.response;
+                if(ans.toLowerCase().includes('yes')){
+                    document.getElementById("bottom").innerHTML = "<p>ChatGPT thinks that this answer is correct!</p><p>The offical answer(s) from USCIS are: " + thisQuestionAnswer;
+                    document.getElementById("nextQuestion").focus();
+                }
+                else{
+                    document.getElementById("bottom").innerHTML = "<p>ChatGPT thinks that this answer is incorrect.</p><p>The offical answer(s) from USCIS are: " + thisQuestionAnswer;
+                    document.getElementById("nextQuestion").focus();
+                }
+            })
+            .catch(error => console.error(error));
+        }
+    }
+
+    function showAnswer() {
+        document.getElementById("bottom").innerHTML = "<p>Correct answer(s): " + thisQuestionAnswer;
+        document.getElementById("nextQuestion").focus();
+    }
+
+    let submitButton = document.getElementById("submitButton")
+    submitButton.addEventListener('click', clickHandler)
+
+    let input = document.getElementById("answer");
+    input.addEventListener("keypress", function (event) {
+        // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            document.getElementById("submitButton").click();
+        }
+    });
+</script>
+
+
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "citizenquestion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.9",
+    "epxress": "0.0.1-security",
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.9",
+    "openai": "^3.2.1"
+  }
+}

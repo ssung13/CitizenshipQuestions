@@ -1,0 +1,156 @@
+.startButton{
+    background-color: #444431;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.startButton:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+
+.questionWrap {
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 30px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: 80%;
+}
+
+.question {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 10px;
+    max-width: 100%;
+  }
+  
+
+.questionWrap p {
+    font-size: 18px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.answer-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.answer-wrap label {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.answer-wrap input {
+    padding: 10px;
+    font-size: 16px;
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 10px;
+    width: 300px;
+}
+
+.answer-wrap button {
+    background-color: #444431;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.answer-wrap button:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.bottom-wrap {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    clear: both; 
+}
+
+.bottom-wrap button{
+    background-color: #444431;
+    color: #fff;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.bottom-wrap button:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.utility button {
+    background-color: #444431;
+    color: #fff;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    flex-direction: row;
+}
+.utility button:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+
+.utility button:disabled {
+    background-color: #585858;
+    color: #fff;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: default;
+    flex-direction: row;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    background: url("declarationofIndependence.jpg") no-repeat center center fixed;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.loader {
+    border: 10px solid #f8f8f8;
+    border-top: 10px solid #444431; 
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+    margin-top: 16px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

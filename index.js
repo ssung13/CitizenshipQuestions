@@ -1,4 +1,3 @@
-let apiKey = "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"
 let path = require("path");
 let fs = require("fs");
 let bodyParser = require("body-parser");
@@ -8,14 +7,6 @@ let read = 0
 let questionsPrompt = [];
 let answersRepo = [];
 const port = process.env.PORT || 4000;
-
-/* openai */
-const { Configuration, OpenAIApi } = require("openai");
-const configuration = new Configuration({
-  apiKey: apiKey,
-});
-const openai = new OpenAIApi(configuration);
-
 
 let currdate = function(){
     today = new Date();
@@ -83,37 +74,6 @@ app.post("/submit", function (request, response){
     }
     response.render("questions", variables);
 });
-
-app.post("/checkAnswerAI", async function (request, response){
-  console.log("we here dog")
-  let {originalQuestion, originalAnswer, userAnswer} = request.body
-  let message = [
-    {role: "user", content: `Here is a question from Civics (History and Government) Questions for the Naturalization Test:
-    ${originalQuestion}
-
-    Here are the list of correct answers to the question:
-    ${originalAnswer}
-
-    A person answered the question with:
-    ${userAnswer}
-    with a margin of small grammatical error, is this answer a passable answer to this question? Please respond with a yes or no, followed by an explanation`},
-    ]
-
-    let completion;
-    try {
-        completion = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: message
-        });
-    } catch (error) {
-        console.log(error);
-    }
-    let ans = completion.data.choices[0].message['content']
-    console.log("chat-gpt answers it with " + ans)
-    response.send(JSON.stringify({response: ans}));
-});
-
-
 
 app.listen(port, () => {
     console.log(`running on port ${port}`)

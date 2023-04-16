@@ -33,10 +33,10 @@
     let counter = 0;
     let askedQuestions = [];
     let askRandomQuestions = "<%= randomness %>";
-    console.log(askRandomQuestions)
+    //console.log(askRandomQuestions)
     if(askRandomQuestions === "true"){
         let generatedQuestion = Math.floor(Math.random() * 100);
-        console.log(generatedQuestion)
+        //console.log(generatedQuestion)
         counter = generatedQuestion;
         askedQuestions.push(generatedQuestion)
     }
@@ -137,7 +137,7 @@
             // Use the default voice
             const voice = speechSynthesis.getVoices().find(voice => voice.lang === 'en-US');
             message.voice = voice;
-            console.log(speechSynthesis.getVoices())
+            //console.log(speechSynthesis.getVoices())
             message.lang = "en-US";
             // Speak the text
             speechSynthesis.speak(message);
@@ -220,25 +220,24 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data.response)
+                //console.log(data.response)
                 let ans = data.response;
-                if(ans.length > 6){
-                    ans[5] = ans[5].toUpperCase();
-                }
-                else{
+                if(ans.length == 0){
                     document.getElementById("bottom").innerText = "Unknown Answer Detected;"
                     return;
                 }
                 if(ans.toLowerCase().includes('yes')){
-                    document.getElementById("bottom").innerHTML = `<p>ChatGPT thinks that this answer is correct!</p><h3>The offical answer(s) from USCIS are: </h3>` + thisQuestionAnswer;
+                    ans = ans.slice(5)
+                    document.getElementById("bottom").innerHTML = `<p>ChatGPT thinks that this answer is <b>correct!</b></p><div><h3 align = 'center'>Explanation:</h3><p style="text-align: center; text-wrap: unrestricted; max-width: 600px;">${ans[0].toUpperCase() + ans.slice(1)}</p></div><h3>The offical answer(s) from USCIS are: </h3>` + thisQuestionAnswer;
                     document.getElementById("nextQuestion").focus();
                 }
-                else if(ans.toLowerCase().includes('error')){
-                    document.getElementById("bottom").innerHTML = `<p>Error sending data to OpenAI. <br>(${ans})`;
+                else if(ans.substring(0,6).toLowerCase() == 'error'){
+                    document.getElementById("bottom").innerHTML = `<p>Error sending data to OpenAI. <br>(${ans})</p>`;
                     document.getElementById("nextQuestion").focus();
                 }
                 else{
-                    document.getElementById("bottom").innerHTML = `<p>ChatGPT thinks that this answer is <b>incorrect</b>.</p><div><h3 align = 'center'>Explanation:</h3><p style="text-align: center; text-wrap: unrestricted; max-width: 600px;">${ans[4].toUpperCase() + ans.slice(5)}</p></div><h3>The offical answer(s) from USCIS are: </h3><div style = 'margin-bottom: 20px'>` + thisQuestionAnswer + "</div>";
+                    ans = ans.slice(4)
+                    document.getElementById("bottom").innerHTML = `<p>ChatGPT thinks that this answer is <b style ="color: red">incorrect</b>.</p><div><h3 align = 'center'>Explanation:</h3><p style="text-align: center; text-wrap: unrestricted; max-width: 600px;">${ans[0].toUpperCase() + ans.slice(1)}</p></div><h3>The offical answer(s) from USCIS are: </h3><div style = 'margin-bottom: 20px'>` + thisQuestionAnswer + "</div>";
                     document.getElementById("nextQuestion").focus();
                 }
             })

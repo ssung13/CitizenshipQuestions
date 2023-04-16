@@ -1,3 +1,6 @@
+/*
+  Author: Si Young Sung
+*/
 let path = require("path");
 let fs = require("fs");
 let bodyParser = require("body-parser");
@@ -7,17 +10,6 @@ let read = 0
 let questionsPrompt = [];
 let answersRepo = [];
 const port = process.env.PORT || 4000;
-
-let currdate = function(){
-    today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1;
-    var yyyy = today.getFullYear();
-
-    if(dd<10) dd='0'+dd;
-    if(mm<10) mm='0'+mm;
-    return (yyyy+'-'+mm+'-'+dd);
-};
 
 app.set("views", path.resolve(__dirname, "templates"));
 app.set("view engine", "ejs");
@@ -35,7 +27,7 @@ function readLinesFromFile(filePath) {
         lines.push(...linesInChunk);
       });
       readStream.on('end', function() {
-        console.log("read file!")
+        console.log(`successfully read file(${filePath})!`)
         resolve(lines);
       });
       readStream.on('error', function(err) {
@@ -45,7 +37,6 @@ function readLinesFromFile(filePath) {
   }
   
 app.get("/", async function (request, response) {
-
     try {
         if(read == 0){
             questionsPrompt = await readLinesFromFile('questions.txt');

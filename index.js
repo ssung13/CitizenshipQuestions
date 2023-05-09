@@ -17,9 +17,6 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(express.static('public'))
 app.use(express.json())
 
-
-
-
 function readLinesFromFile(filePath) {
     return new Promise((resolve, reject) => {
       const lines = [];

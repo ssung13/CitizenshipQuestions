@@ -92,6 +92,7 @@
     thisQuestion = DOMPurify.sanitize(thisQuestion);
     document.getElementById("question").innerHTML = `${parseInt(counter)+1}. ` + thisQuestion + " <button type='button' id='audioButton' onClick = readQuestion()> ♪ </button>"
 
+    // remove any syncategorematic terms
     function removeSyncategorematicTerms(str) {
         let processedStr = str.replace(/[()]/g, "");
         processedStr = processedStr.replaceAll(".", "");

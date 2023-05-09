@@ -30,6 +30,21 @@
 </body>
 
 <script>
+
+    class Question{
+        constructor(question,answer){
+            this.question = question;
+            this.answer = answer;
+        }
+        getQuestion(){
+            return this.question;
+        } 
+
+        getAnswer(){
+            return this.answer;
+        }
+    }
+
     let counter = 0;
     let askedQuestions = [];
     let askRandomQuestions = "<%= randomness %>";
@@ -64,8 +79,14 @@
 
     let questions = "<%= test %>".split(',');
     let answers = "<%= test2 %>".split('|');
+
+    let questionsData = []
+    for(let i = 0; i < questions.length; i++){
+        questionsData.push(new Question(questions[i],answers[i]))
+    }
+
     let thisQuestionAnswer, thisUserAnswer, thisQuestion;
-    thisQuestion = questions[counter].replaceAll("，",', ')
+    thisQuestion = questionsData[counter].getQuestion().replaceAll("，",', ')
 
     // santitize to avoid any injection
     thisQuestion = DOMPurify.sanitize(thisQuestion);
@@ -89,8 +110,7 @@
 
     async function clickHandler(event) {
         let userAnswer = removeSyncategorematicTerms(document.getElementById("answer").value)
-        // console.log(userAnswer)
-        let originalAnswer = answers[counter].split(",")
+        let originalAnswer = questionsData[counter].getAnswer().split(",")
         if (originalAnswer.length != 1) {
             originalAnswer.shift();
         }
